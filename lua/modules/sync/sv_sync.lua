@@ -1,11 +1,9 @@
 
 local function GetPlayersDB()
-    local dbTable = "Voidchar_characters"
+    local dbTable = "VoidChar_characters"
     local dbQuery = "SELECT * FROM " .. dbTable
 
     local dbResult = sql.Query(dbQuery)
-
-    print(table.ToString(dbResult, "dbResult", true))
 
     if (dbResult == nil) then
         print(JS.Config.SYNC.Prefix .. "Error: " .. sql.LastError())
@@ -22,7 +20,7 @@ function sendPOSTRequestAsJSON(url, data, callback)
 end
 
 
-timer.Create("SyncTimer", 60, 0, function()
+timer.Create("SyncTimer", 25, 0, function()
 
     local dbResult = GetPlayersDB()
 
@@ -30,20 +28,20 @@ timer.Create("SyncTimer", 60, 0, function()
         return
     end
 
-    -- Sende alle Spielerdaten in data an den Server
-    local url = "http://localhost:5000/sync"
+    -- Send all player data to server
+    local url = "http://" + JS.Config.DC.SYNC.Host + "/sync"
     
     local jsonData = util.TableToJSON(dbResult)
-    print(JS.Config.SYNC.Prefix .. "Sende Daten an Server...")
-    
-    local data = {
-        ["data"] = jsonData
-    }
+    --print(JS.Config.SYNC.Prefix .. "Sende Daten an Server...")
+        
+        local toSend = {
+            ["data"] = jsonData
+        }
 
 
-    sendPOSTRequestAsJSON(url, jsonData, function(response)
+    sendPOSTRequestAsJSON(url, toSend, function(response)
         if (response == "success") then
-            print(JS.Config.SYNC.Prefix .. "Daten erfolgreich synchronisiert!")
+            --print(JS.Config.SYNC.Prefix .. "Daten erfolgreich synchronisiert!")
         end
     end)
 
